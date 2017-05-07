@@ -31,7 +31,7 @@ void AVisionVehiclesHud::DrawHUD()
 
 	// Calculate ratio from 720p
 	const float HUDXRatio = Canvas->SizeX / 1280.f;
-	const float HUDYRatio = Canvas->SizeY / 720.f;
+	const float HUDYRatio = Canvas->SizeY / 320.f;
 
 	bool bWantHUD = true;
 #if HMD_MODULE_INCLUDED

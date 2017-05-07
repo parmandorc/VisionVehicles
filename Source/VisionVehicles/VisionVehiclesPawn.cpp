@@ -223,6 +223,8 @@ void AVisionVehiclesPawn::BeginPlay()
 	bEnableInCar = UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled();
 #endif // HMD_MODULE_INCLUDED
 	EnableIncarView(bEnableInCar,true);
+
+     //MoveForward(1.f);
 }
 
 void AVisionVehiclesPawn::OnResetVR()
