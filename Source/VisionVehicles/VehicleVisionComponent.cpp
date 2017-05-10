@@ -7,7 +7,7 @@ UVehicleVisionComponent::UVehicleVisionComponent()
 {
 	// Set defaults
 	ClassColor = FLinearColor::Red;
-	ClassColorDistanceThreshold = 1.25f;
+	ClassColorDistanceThreshold = 0.5f;
 
 	if (TextureTarget != nullptr)
 	{
@@ -23,16 +23,25 @@ TBitArray<FDefaultBitArrayAllocator> UVehicleVisionComponent::GetFeed()
 	renderTarget->ReadPixels(rawCameraFeed);
 
 	// Transform the raw feed into classified data
+	FLinearColor normalizedClassColor = ToNormalizedRGB(ClassColor);
 	int32 numPixels = rawCameraFeed.Num();
 	TBitArray<FDefaultBitArrayAllocator> feed;
 	feed.Init(false, numPixels);
 	for (int i = 0; i < numPixels; i++)
 	{
-		if (FLinearColor::Dist(rawCameraFeed[i].ReinterpretAsLinear(), ClassColor) < ClassColorDistanceThreshold)
+		// Use euclidean distance between normalized colors to determine if it belongs to the class
+		if (FLinearColor::Dist(ToNormalizedRGB(rawCameraFeed[i].ReinterpretAsLinear()), normalizedClassColor) < ClassColorDistanceThreshold)
 		{
 			feed[i] = true;
 		}
 	}
 
 	return feed;
+}
+
+FLinearColor UVehicleVisionComponent::ToNormalizedRGB(const FLinearColor color) const
+{
+	FVector colorAsVector(color.R, color.G, color.B);
+	colorAsVector.Normalize();
+	return FLinearColor(colorAsVector.X, colorAsVector.Y, colorAsVector.Z, 1.0f);
 }

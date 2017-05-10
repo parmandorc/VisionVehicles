@@ -26,4 +26,9 @@ public:
 
 	/* Returns the camera feed as classified data.*/
 	TBitArray<FDefaultBitArrayAllocator> GetFeed();
+
+private:
+	/* Converts a color to normalized RGB format. 
+	 * This removes the luminosity of a color, making it the same regardless of shadows or bright spots. */
+	FLinearColor ToNormalizedRGB(const FLinearColor color) const;
 };
