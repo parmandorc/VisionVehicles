@@ -4,6 +4,7 @@
 #define __VISIONVEHICLES_H__
 
 #include "CoreUObject.h"
+#include "Engine.h"
 
 #define HMD_MODULE_INCLUDED 1
 

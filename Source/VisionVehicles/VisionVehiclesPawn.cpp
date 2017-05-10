@@ -12,6 +12,7 @@
 #include "WheeledVehicleMovementComponent4W.h"
 #include "Engine/SkeletalMesh.h"
 #include "Engine.h"
+#include "VehicleVisionComponent.h"
 
 // Needed for VR Headset
 #if HMD_MODULE_INCLUDED
@@ -69,6 +70,12 @@ AVisionVehiclesPawn::AVisionVehiclesPawn()
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 	Camera->FieldOfView = 90.f;
+
+	// Create vision component
+	VisionComponent = CreateDefaultSubobject<UVehicleVisionComponent>(TEXT("VisionComponent0"));
+	VisionComponent->SetRelativeLocation(FVector(150.0f, 0.0f, 180.0f));
+	VisionComponent->SetRelativeRotation(FRotator(-30.0f, 0.0f, 0.0f));
+	VisionComponent->SetupAttachment(RootComponent);
 
 	// Create In-Car camera component 
 	InternalCameraOrigin = FVector(0.0f, -40.0f, 120.0f);
@@ -223,8 +230,6 @@ void AVisionVehiclesPawn::BeginPlay()
 	bEnableInCar = UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled();
 #endif // HMD_MODULE_INCLUDED
 	EnableIncarView(bEnableInCar,true);
-
-     //MoveForward(1.f);
 }
 
 void AVisionVehiclesPawn::OnResetVR()
