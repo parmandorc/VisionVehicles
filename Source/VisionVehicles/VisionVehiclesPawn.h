@@ -7,6 +7,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UTextRenderComponent;
 class UInputComponent;
+class UVehicleVisionComponent;
 UCLASS(config=Game)
 class AVisionVehiclesPawn : public AWheeledVehicle
 {
@@ -36,7 +37,10 @@ class AVisionVehiclesPawn : public AWheeledVehicle
 	UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UTextRenderComponent* InCarGear;
 
-	
+	/* Vision compoment used by the vehicle */
+	UPROPERTY(Category = Vision, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UVehicleVisionComponent* VisionComponent;
+
 public:
 	AVisionVehiclesPawn();
 
@@ -126,4 +130,6 @@ public:
 	FORCEINLINE UTextRenderComponent* GetInCarSpeed() const { return InCarSpeed; }
 	/** Returns InCarGear subobject **/
 	FORCEINLINE UTextRenderComponent* GetInCarGear() const { return InCarGear; }
+	/** Returns vision component **/
+	FORCEINLINE UVehicleVisionComponent* GetVisionComponent() const { return VisionComponent; }
 };

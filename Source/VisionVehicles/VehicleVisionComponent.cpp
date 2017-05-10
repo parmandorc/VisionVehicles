@@ -15,23 +15,6 @@ UVehicleVisionComponent::UVehicleVisionComponent()
 	}
 }
 
-void UVehicleVisionComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	if (TickType == ELevelTick::LEVELTICK_All)
-	{
-		TBitArray<FDefaultBitArrayAllocator> cameraFeed = GetFeed();
-
-		// Count positive pixels
-		int32 classCount = 0;
-		for (int i = 0; i < cameraFeed.Num(); i++)
-		{
-			if (cameraFeed[i]) ++classCount;
-		}
-
-		UE_LOG(LogTemp, Log, TEXT("Positive pixels count: %f"), (float)classCount / cameraFeed.Num());
-	}
-}
-
 TBitArray<FDefaultBitArrayAllocator> UVehicleVisionComponent::GetFeed()
 {
 	// Get the raw feed from the camera

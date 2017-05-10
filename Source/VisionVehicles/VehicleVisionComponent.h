@@ -24,10 +24,6 @@ class VISIONVEHICLES_API UVehicleVisionComponent : public USceneCaptureComponent
 public:
 	UVehicleVisionComponent();
 
-	// BEGIN ACTOR COMPONENT INTERFACE
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	// END ACTOR COMPONENT INTERFACE
-
 	/* Returns the camera feed as classified data.*/
 	TBitArray<FDefaultBitArrayAllocator> GetFeed();
 };
