@@ -120,9 +120,6 @@ AVisionVehiclesPawn::AVisionVehiclesPawn()
 	GearDisplayColor = FColor(255, 255, 255, 255);
 
 	bInReverseGear = false;
-
-	// Set neural network
-	NeuralNetwork = UNeuralNetwork::GetInstance();
 }
 
 void AVisionVehiclesPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -240,6 +237,9 @@ void AVisionVehiclesPawn::BeginPlay()
 	bEnableInCar = UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled();
 #endif // HMD_MODULE_INCLUDED
 	EnableIncarView(bEnableInCar,true);
+
+     // Set neural network
+     NeuralNetwork = UNeuralNetwork::GetInstance();
 
 	// Initialize neural network
 	NeuralNetwork->Init(1, 2, TArray<int>({ 2, 2 }));
