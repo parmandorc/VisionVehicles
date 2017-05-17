@@ -35,9 +35,9 @@ void UNeuralNetwork::Init(int inputs, int outputs, TArray<int> hiddenLayers)
 		for (int j = 0; j < dimensions[l]; j++)
 		{
 			TArray<float> w; // The weights for the current unit
-			for (int i = 0; i < dimensions[l - 1]; i++)
+			for (int i = 0; i < dimensions[l - 1] + 1; i++) // +1: include the weight for the bias
 			{
-				w.Add(FMath::RandRange(0.0f, 1.0f));
+				w.Add(FMath::RandRange(-1.0f, 1.0f));
 			}
 			layer.Add(w);
 		}
@@ -52,9 +52,10 @@ TArray<float> UNeuralNetwork::Run(TArray<float> inputs)
 
 	// Initialize the first layer with the input values
 	activations.Add(inputs);
-
+	activations[0].Add(1.0f); // Add the extra value for the bias
+	
 	// Feed forward the activation values
-	for (int l = 0; l < weights.Num() - 1; l++)
+	for (int l = 0; l < weights.Num(); l++)
 	{
 		TArray<float> a;
 		for (int j = 0; j < weights[l].Num(); j++)
@@ -62,6 +63,7 @@ TArray<float> UNeuralNetwork::Run(TArray<float> inputs)
 			float z = Dot(activations[l], weights[l][j]);
 			a.Add(Sigmoid(z));
 		}
+		if (l < weights.Num() - 1) a.Add(1.0f); // Add the extra value for the bias (not needed for the output layer)
 		activations.Add(a);
 	}
 
