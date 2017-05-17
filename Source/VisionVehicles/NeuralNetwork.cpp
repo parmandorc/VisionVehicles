@@ -71,7 +71,7 @@ TArray<float> UNeuralNetwork::Run(TArray<float> inputs)
 	return activations.Top();
 }
 
-float UNeuralNetwork::Dot(TArray<float>& a, TArray<float>& b)
+float UNeuralNetwork::Dot(const TArray<float>& a, const TArray<float>& b) const
 {
 	if (a.Num() != b.Num())
 	{
@@ -89,5 +89,27 @@ float UNeuralNetwork::Dot(TArray<float>& a, TArray<float>& b)
 
 float UNeuralNetwork::Train(TArray<float> inputs, TArray<float> expectedOutputs)
 {
-	return 0.0f;
+	// Run the NN and get the resulted output
+	TArray<float> outputs = Run(inputs);
+
+	// Calculate the error made
+	float error = ComputeError(expectedOutputs, outputs);
+
+	return error;
+}
+
+float UNeuralNetwork::ComputeError(const TArray<float>& a, const TArray<float>& b) const
+{
+	if (a.Num() != b.Num())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Trying to compare two vectors with non-equal dimensions: %d - %d."), a.Num(), b.Num());
+		return 0.0f;
+	}
+
+	float value = 0.0f;
+	for (int i = 0; i < a.Num(); i++)
+	{
+		value += (a[i] - b[i]) * (a[i] - b[i]);
+	}
+	return value * 0.5f;
 }

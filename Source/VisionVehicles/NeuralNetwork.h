@@ -46,8 +46,11 @@ public:
 private:
 	// Calculates the dot product of two vectors
 	// PRE: a.Num() == b.Num()
-	float Dot(TArray<float>& a, TArray<float>& b);
+	float Dot(const TArray<float>& a, const TArray<float>& b) const;
 
 	// The sigmoid function used as activation function for the neural network
-	FORCEINLINE float Sigmoid(float value) { return 1.0f / (1.0f + FMath::Exp(-value)); }
+	FORCEINLINE float Sigmoid(float value) const { return 1.0f / (1.0f + FMath::Exp(-value)); }
+
+	// Computes the error between the two given errors
+	float ComputeError(const TArray<float>& a, const TArray<float>& b) const;
 };
