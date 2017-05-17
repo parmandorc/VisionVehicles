@@ -127,21 +127,21 @@ AVisionVehiclesPawn::AVisionVehiclesPawn()
 
 void AVisionVehiclesPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	//Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// set up gameplay key bindings
-	check(PlayerInputComponent);
+	//// set up gameplay key bindings
+	//check(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &AVisionVehiclesPawn::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AVisionVehiclesPawn::MoveRight);
-	PlayerInputComponent->BindAxis("LookUp");
-	PlayerInputComponent->BindAxis("LookRight");
+	//PlayerInputComponent->BindAxis("MoveForward", this, &AVisionVehiclesPawn::MoveForward);
+	//PlayerInputComponent->BindAxis("MoveRight", this, &AVisionVehiclesPawn::MoveRight);
+	//PlayerInputComponent->BindAxis("LookUp");
+	//PlayerInputComponent->BindAxis("LookRight");
 
-	PlayerInputComponent->BindAction("Handbrake", IE_Pressed, this, &AVisionVehiclesPawn::OnHandbrakePressed);
-	PlayerInputComponent->BindAction("Handbrake", IE_Released, this, &AVisionVehiclesPawn::OnHandbrakeReleased);
-	PlayerInputComponent->BindAction("SwitchCamera", IE_Pressed, this, &AVisionVehiclesPawn::OnToggleCamera);
+	//PlayerInputComponent->BindAction("Handbrake", IE_Pressed, this, &AVisionVehiclesPawn::OnHandbrakePressed);
+	//PlayerInputComponent->BindAction("Handbrake", IE_Released, this, &AVisionVehiclesPawn::OnHandbrakeReleased);
+	//PlayerInputComponent->BindAction("SwitchCamera", IE_Pressed, this, &AVisionVehiclesPawn::OnToggleCamera);
 
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AVisionVehiclesPawn::OnResetVR); 
+	//PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AVisionVehiclesPawn::OnResetVR); 
 }
 
 void AVisionVehiclesPawn::MoveForward(float Val)
@@ -295,5 +295,106 @@ void AVisionVehiclesPawn::SetupInCarHUD()
 		}
 	}
 }
+
+bool checked_value = false;
+
+
+FVector2D AVisionVehiclesPawn::FindTrackEnd(TArray<bool> cameraFeed)
+{
+     //if (cameraFeed.Num() != size_y*size_x)
+     //     return FVector2D(-1, -1);
+     //int size_y = sqrt(cameraFeed.Num()),
+     //     size_x = size_y;
+     //start_point_found = false;
+     //end_point_found = false;
+
+     ////go along the left border: (0, Y) -> (0, 0)
+     //for (int y = size_y - 1; y >= 0; y--)
+     //{
+     //     if (cameraFeed[y*size_x] == checked_value && !start_point_found)
+     //     {
+     //          start_point_found = true;
+     //          start_point = FVector2D(0.f, y);
+     //     }
+     //     if (cameraFeed[y*size_x] == !checked_value && !end_point_found && start_point_found)
+     //     {
+     //          end_point_found = true;
+     //          end_point = FVector2D(0.f, y - 1);
+     //     }
+     //}
+     //
+     //go along the top border: (0, 0) -> (X, 0)
+     //if (!end_point_found)
+     //{
+
+     int size = sqrt(cameraFeed.Num()),
+          half_size = size / 2,
+          left = 0,
+          right = 0;
+     for (int i = 0; i < cameraFeed.Num(); i++)
+     {
+          if (cameraFeed[i] == checked_value)
+          {
+               if (i%half_size % 2 == 0)
+                    left++;
+               else
+                    right++;
+          }
+     }
+     return (FVector2D(left, right));
+
+
+     //     for (int x = 0; x < size_x; x++)
+     //     {
+     //          if (cameraFeed[x] == checked_value && !start_point_found)
+     //          {
+     //               start_point_found = true;
+     //               start_point = FVector2D(x, 0.f);
+     //          }
+     //          if (cameraFeed[x] == !checked_value && !end_point_found && start_point_found)
+     //          {
+     //               end_point_found = true;
+     //               end_point = FVector2D(x - 1, 0.f);
+     //          }
+     //     }
+
+     //     ////go along the right border: (X, 0) -> (X, Y)
+     //     //if (!end_point_found)
+     //     //{
+     //     //     for (int y = 0; y < size_y; y++)
+     //     //     {
+     //     //          if (cameraFeed[(y + 1)*size_x - 1] == checked_value && !start_point_found)
+     //     //          {
+     //     //               start_point_found = true;
+     //     //               start_point = FVector2D(size_x - 1, y);
+     //     //          }
+     //     //          if (cameraFeed[(y + 1)*size_x - 1] == !checked_value && !end_point_found && start_point_found)
+     //     //          {
+     //     //               end_point_found = true;
+     //     //               end_point = FVector2D(size_x - 1, y - 1);
+     //     //          }
+     //     //     }
+     //     //}
+     ////}
+
+     //if (end_point_found)
+     //{
+     //     return FVector2D(
+     //          int((start_point.X + end_point.X) / 2),
+     //          int((start_point.Y + end_point.Y) / 2));
+     //}
+     //return FVector2D(-1, -1);
+}
+
+void AVisionVehiclesPawn::TrainNetwork(TArray<float> _inputs, TArray<float> _outputs)
+{
+     NeuralNetwork->Train(_inputs, _outputs);
+}
+
+TArray<float> AVisionVehiclesPawn::RunNetwork(TArray<float> _inputs)
+{
+     return NeuralNetwork->Run(_inputs);
+}
+
 
 #undef LOCTEXT_NAMESPACE

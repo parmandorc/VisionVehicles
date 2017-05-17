@@ -39,6 +39,15 @@ TBitArray<FDefaultBitArrayAllocator> UVehicleVisionComponent::GetFeed()
 	return feed;
 }
 
+TArray<bool> UVehicleVisionComponent::GetCameraFeed()
+{
+     TBitArray<FDefaultBitArrayAllocator> feed = GetFeed();
+     TArray<bool> result;
+     for (int i = 0; i < feed.Num(); i++)
+          result.Add(feed[i]);
+     return result;
+}
+
 FLinearColor UVehicleVisionComponent::ToNormalizedRGB(const FLinearColor color) const
 {
 	FVector colorAsVector(color.R, color.G, color.B);

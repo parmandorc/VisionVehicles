@@ -12,7 +12,4 @@ UCLASS()
 class VISIONVEHICLES_API AVisionVehiclesAIController : public AAIController
 {
      GENERATED_BODY()
-
-     UFUNCTION(BlueprintCallable)
-     FVector2D FindTrackEnd(TArray<bool> cameraFeed, int size_y, int size_x);
 };

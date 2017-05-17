@@ -25,7 +25,11 @@ public:
 	UVehicleVisionComponent();
 
 	/* Returns the camera feed as classified data.*/
+
 	TBitArray<FDefaultBitArrayAllocator> GetFeed();
+
+     UFUNCTION(BlueprintCallable)
+          TArray<bool> GetCameraFeed();
 
 private:
 	/* Converts a color to normalized RGB format. 

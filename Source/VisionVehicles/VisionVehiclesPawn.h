@@ -119,10 +119,6 @@ private:
 	/* Are we on a 'slippery' surface */
 	bool bIsLowFriction;
 
-	// A reference to the neural network used by this pawn
-	UPROPERTY()
-	UNeuralNetwork* NeuralNetwork;
-
 public:
 	/** Returns SpringArm subobject **/
 	FORCEINLINE USpringArmComponent* GetSpringArm() const { return SpringArm; }
@@ -138,4 +134,17 @@ public:
 	FORCEINLINE UVehicleVisionComponent* GetVisionComponent() const { return VisionComponent; }
 	/** Return the neural network used by this pawn */
 	FORCEINLINE UNeuralNetwork* GetNeuralNetwork() const { return NeuralNetwork; }
+     
+     // A reference to the neural network used by this pawn
+     UPROPERTY()
+          UNeuralNetwork* NeuralNetwork;
+
+     UFUNCTION(BlueprintCallable)
+          FVector2D FindTrackEnd(TArray<bool> cameraFeed);
+     
+     UFUNCTION(BlueprintCallable)
+          void TrainNetwork(TArray<float> _inputs, TArray<float> _outputs);
+
+     UFUNCTION(BlueprintCallable)
+          TArray<float> RunNetwork(TArray<float> _inputs);
 };
