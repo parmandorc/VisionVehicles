@@ -26,6 +26,9 @@ private:
 	// The dimension for the hidden layers in the neural network
 	TArray<int> nHiddenLayers;
 
+	// The weights for each layer of neural network, and for each neuron
+	TArray<TArray<TArray<float>>> weights;
+
 public:
 	// Factory method for the class
 	static UNeuralNetwork* GetInstance();
@@ -35,4 +38,12 @@ public:
 
 	// Runs the neural network for the given inputs and returns its ouput
 	TArray<float> Run(TArray<float> inputs);
+
+private:
+	// Calculates the dot product of two vectors
+	// PRE: a.Num() == b.Num()
+	float Dot(TArray<float>& a, TArray<float>& b);
+
+	// The sigmoid function used as activation function for the neural network
+	FORCEINLINE float Sigmoid(float value) { return 1.0f / (1.0f + FMath::Exp(-value)); }
 };

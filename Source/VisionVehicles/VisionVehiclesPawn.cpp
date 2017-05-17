@@ -123,7 +123,6 @@ AVisionVehiclesPawn::AVisionVehiclesPawn()
 
 	// Set neural network
 	NeuralNetwork = UNeuralNetwork::GetInstance();
-	NeuralNetwork->Init(1, 2, TArray<int>({2, 2}));
 }
 
 void AVisionVehiclesPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -224,6 +223,12 @@ void AVisionVehiclesPawn::Tick(float Delta)
 			InternalCamera->RelativeRotation = HeadRotation;
 		}
 	}
+
+	// Testing NN
+	TArray<float> input = TArray<float>({ FMath::RandRange(0.0f, 1.0f) });
+	TArray<float> output = NeuralNetwork->Run(input);
+	UE_LOG(LogTemp, Log, TEXT("Run NN: %f"), input[0]);
+	for (float x : output) { UE_LOG(LogTemp, Log, TEXT("%f"), x); }
 }
 
 void AVisionVehiclesPawn::BeginPlay()
@@ -235,6 +240,9 @@ void AVisionVehiclesPawn::BeginPlay()
 	bEnableInCar = UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled();
 #endif // HMD_MODULE_INCLUDED
 	EnableIncarView(bEnableInCar,true);
+
+	// Initialize neural network
+	NeuralNetwork->Init(1, 2, TArray<int>({ 2, 2 }));
 }
 
 void AVisionVehiclesPawn::OnResetVR()
