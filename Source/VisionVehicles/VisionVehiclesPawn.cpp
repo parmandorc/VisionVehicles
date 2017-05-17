@@ -13,6 +13,7 @@
 #include "Engine/SkeletalMesh.h"
 #include "Engine.h"
 #include "VehicleVisionComponent.h"
+#include "NeuralNetwork.h"
 
 // Needed for VR Headset
 #if HMD_MODULE_INCLUDED
@@ -119,6 +120,10 @@ AVisionVehiclesPawn::AVisionVehiclesPawn()
 	GearDisplayColor = FColor(255, 255, 255, 255);
 
 	bInReverseGear = false;
+
+	// Set neural network
+	NeuralNetwork = UNeuralNetwork::GetInstance();
+	NeuralNetwork->Init(1, 2, TArray<int>({2, 2}));
 }
 
 void AVisionVehiclesPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)

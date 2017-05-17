@@ -8,6 +8,7 @@ class USpringArmComponent;
 class UTextRenderComponent;
 class UInputComponent;
 class UVehicleVisionComponent;
+class UNeuralNetwork;
 UCLASS(config=Game)
 class AVisionVehiclesPawn : public AWheeledVehicle
 {
@@ -118,6 +119,9 @@ private:
 	/* Are we on a 'slippery' surface */
 	bool bIsLowFriction;
 
+	// A reference to the neural network used by this pawn
+	UPROPERTY()
+	UNeuralNetwork* NeuralNetwork;
 
 public:
 	/** Returns SpringArm subobject **/
@@ -132,4 +136,6 @@ public:
 	FORCEINLINE UTextRenderComponent* GetInCarGear() const { return InCarGear; }
 	/** Returns vision component **/
 	FORCEINLINE UVehicleVisionComponent* GetVisionComponent() const { return VisionComponent; }
+	/** Return the neural network used by this pawn */
+	FORCEINLINE UNeuralNetwork* GetNeuralNetwork() const { return NeuralNetwork; }
 };
