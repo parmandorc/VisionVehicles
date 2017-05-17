@@ -39,6 +39,10 @@ public:
 	// Runs the neural network for the given inputs and returns its ouput
 	TArray<float> Run(TArray<float> inputs);
 
+	/* Trains the neural network for the given inputs and expected output.
+	 *	Returns the error that was made in this iteration. */
+	float Train(TArray<float> inputs, TArray<float> expectedOutputs);
+
 private:
 	// Calculates the dot product of two vectors
 	// PRE: a.Num() == b.Num()

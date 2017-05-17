@@ -224,7 +224,7 @@ void AVisionVehiclesPawn::Tick(float Delta)
 		}
 	}
 
-	// Testing NN
+	// Testing NN -- to delete when using real inputs and outputs
 	TArray<float> input = TArray<float>({ FMath::RandRange(0.0f, 1.0f) });
 	TArray<float> output = NeuralNetwork->Run(input);
 	UE_LOG(LogTemp, Log, TEXT("Run NN: %f"), input[0]);

@@ -84,3 +84,8 @@ float UNeuralNetwork::Dot(TArray<float>& a, TArray<float>& b)
 	}
 	return value;
 }
+
+float UNeuralNetwork::Train(TArray<float> inputs, TArray<float> expectedOutputs)
+{
+	return 0.0f;
+}
