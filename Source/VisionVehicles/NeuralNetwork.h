@@ -44,12 +44,19 @@ public:
 	float Train(TArray<float> inputs, TArray<float> expectedOutputs);
 
 private:
+	// Runs the neural network for the given inputs and returns its ouput
+	//	Also returns the weighted sums and activations of each unit in each layer
+	TArray<float> Run(TArray<float> inputs, TArray<TArray<float>>* weightedSums, TArray<TArray<float>>* activations);
+
 	// Calculates the dot product of two vectors
 	// PRE: a.Num() == b.Num()
 	float Dot(const TArray<float>& a, const TArray<float>& b) const;
 
 	// The sigmoid function used as activation function for the neural network
 	FORCEINLINE float Sigmoid(float value) const { return 1.0f / (1.0f + FMath::Exp(-value)); }
+
+	// The derivative of the sigmoid function
+	FORCEINLINE float SigmoidPrime(float value) const { float s = Sigmoid(value); return s * (1 - s); }
 
 	// Computes the error between the two given errors
 	float ComputeError(const TArray<float>& a, const TArray<float>& b) const;

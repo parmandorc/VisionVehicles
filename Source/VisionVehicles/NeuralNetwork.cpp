@@ -46,29 +46,56 @@ void UNeuralNetwork::Init(int inputs, int outputs, TArray<int> hiddenLayers)
 	}
 }
 
-TArray<float> UNeuralNetwork::Run(TArray<float> inputs)
+TArray<float> UNeuralNetwork::Run(TArray<float> inputs, TArray<TArray<float>>* weightedSums, TArray<TArray<float>>* activations)
 {
-	TArray<TArray<float>> activations; // The activations of each unit in each layer
+	weightedSums->Empty();
+	activations->Empty();
 
 	// Initialize the first layer with the input values
-	activations.Add(inputs);
-	activations[0].Add(1.0f); // Add the extra value for the bias
+	activations->Add(inputs);
 	
 	// Feed forward the activation values
 	for (int l = 0; l < weights.Num(); l++)
 	{
-		TArray<float> a;
+		TArray<float> ws; // The weighted sum for each unit in this layer
+		TArray<float> a; // The activation for each unit in this layer
+
+		TArray<float> prevActivation = (*activations)[l]; // The activations of the previous layer
+		prevActivation.Add(1.0f); // Add the extra value for the bias
 		for (int j = 0; j < weights[l].Num(); j++)
 		{
-			float z = Dot(activations[l], weights[l][j]);
+			float z = Dot(prevActivation, weights[l][j]);
+			ws.Add(z);
 			a.Add(Sigmoid(z));
 		}
-		if (l < weights.Num() - 1) a.Add(1.0f); // Add the extra value for the bias (not needed for the output layer)
-		activations.Add(a);
+
+		weightedSums->Add(ws);
+		activations->Add(a);
 	}
 
 	// Return the output values
-	return activations.Top();
+	return (*activations).Top();
+}
+
+TArray<float> UNeuralNetwork::Run(TArray<float> inputs)
+{
+	TArray<TArray<float>> weightedSums, activations;
+	return Run(inputs, &weightedSums, &activations);
+}
+
+float UNeuralNetwork::Train(TArray<float> inputs, TArray<float> expectedOutputs)
+{
+	// Run the NN and get the resulted output
+	TArray<TArray<float>> weightedSums, activations;
+	TArray<float> outputs = Run(inputs, &weightedSums, &activations);
+
+	// The deltas for each unit in each layer (how a change in its value affects a change in the error)
+	TArray<TArray<float>> deltas;
+
+	// Calculate the error made
+	float error = ComputeError(expectedOutputs, outputs);
+
+	return error;
 }
 
 float UNeuralNetwork::Dot(const TArray<float>& a, const TArray<float>& b) const
@@ -85,17 +112,6 @@ float UNeuralNetwork::Dot(const TArray<float>& a, const TArray<float>& b) const
 		value += a[i] * b[i];
 	}
 	return value;
-}
-
-float UNeuralNetwork::Train(TArray<float> inputs, TArray<float> expectedOutputs)
-{
-	// Run the NN and get the resulted output
-	TArray<float> outputs = Run(inputs);
-
-	// Calculate the error made
-	float error = ComputeError(expectedOutputs, outputs);
-
-	return error;
 }
 
 float UNeuralNetwork::ComputeError(const TArray<float>& a, const TArray<float>& b) const
