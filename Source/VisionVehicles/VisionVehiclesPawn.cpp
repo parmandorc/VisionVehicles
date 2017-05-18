@@ -399,5 +399,15 @@ TArray<float> AVisionVehiclesPawn::RunNetwork(TArray<float> _inputs)
      return NeuralNetwork->Run(_inputs);
 }
 
+TArray<int> AVisionVehiclesPawn::GetNetworkStructure()
+{
+     return NeuralNetwork->GetStructure();
+}
+
+float AVisionVehiclesPawn::GetWeight(int _layerInd, int _fromInd, int _toInd)
+{
+     return NeuralNetwork->GetWeight(_layerInd, _fromInd, _toInd);
+}
+
 
 #undef LOCTEXT_NAMESPACE

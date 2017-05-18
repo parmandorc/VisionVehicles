@@ -147,4 +147,11 @@ public:
 
      UFUNCTION(BlueprintCallable)
           TArray<float> RunNetwork(TArray<float> _inputs);
+     
+     UFUNCTION(BlueprintCallable)
+          TArray<int> GetNetworkStructure();
+
+     UFUNCTION(BlueprintCallable)
+          float GetWeight(int _layerInd, int _fromInd, int _toInd);
+
 };

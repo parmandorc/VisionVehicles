@@ -146,6 +146,21 @@ float UNeuralNetwork::Train(TArray<float> inputs, TArray<float> expectedOutputs)
 	return ComputeError(expectedOutputs, outputs);
 }
 
+TArray<int> UNeuralNetwork::GetStructure()
+{
+     TArray<int> result;
+     result.Add(nInputs);
+     for (int i = 0; i<nHiddenLayers.Num(); i++)
+          result.Add(nHiddenLayers[i]); 
+     result.Add(nOutputs);
+     return result;
+}
+
+float UNeuralNetwork::GetWeight(int _layerId, int _fromInd, int _toInd)
+{
+     return weights[_layerId][_fromInd][_toInd];
+}
+
 
 // ------ AUXILIARY MATHEMATICAL METHODS ------
 

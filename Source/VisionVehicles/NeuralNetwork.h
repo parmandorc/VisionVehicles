@@ -55,6 +55,9 @@ public:
 	 *	Returns the error that was made in this iteration. */
 	float Train(TArray<float> inputs, TArray<float> expectedOutputs);
 
+     TArray<int> GetStructure();
+
+     float GetWeight(int _layerId, int _fromInd, int _toInd);
 private:
 	// Runs the neural network for the given inputs and returns its ouput
 	//	Also returns the weighted sums and activations of each unit in each layer
@@ -85,4 +88,6 @@ private:
 
 	// The derivative of the sigmoid function
 	FORCEINLINE float SigmoidPrime(float value) const { float s = Sigmoid(value); return s * (1 - s); }
+
+     
 };
