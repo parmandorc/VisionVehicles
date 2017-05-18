@@ -59,7 +59,9 @@ TArray<float> UNeuralNetwork::Run(TArray<float> inputs, TArray<TArray<float>>* w
 	activations->Empty();
 
 	// Initialize the first layer with the input values
-	activations->Add(inputs);
+	TArray<float> inputsActivations;
+	for (float value : inputs) inputsActivations.Add(Sigmoid(value));
+	activations->Add(inputsActivations);
 	
 	// Feed forward the activation values
 	for (int l = 0; l < weights.Num(); l++)
@@ -101,7 +103,9 @@ float UNeuralNetwork::Train(TArray<float> inputs, TArray<float> expectedOutputs)
 	TArray<TArray<float>> deltas;
 
 	// Compute the deltas for the last layer
-	deltas.Add(Multiply(Difference(activations.Top(), expectedOutputs), weightedSums.Top()));
+	TArray<float> outputSigmoidPrimes;
+	for (float value : weightedSums.Top()) outputSigmoidPrimes.Add(SigmoidPrime(value));
+	deltas.Add(Multiply(Difference(activations.Top(), expectedOutputs), outputSigmoidPrimes));
 
 	// Compute the deltas for each layer backwards: backpropagation
 	for (int l = weights.Num() - 2; l >= 0; l--)
@@ -111,7 +115,7 @@ float UNeuralNetwork::Train(TArray<float> inputs, TArray<float> expectedOutputs)
 		TArray<float> d;
 		for (int i = 0; i < weights[l].Num(); i++)
 		{
-			d.Add(Dot(nextLayerWeightsT[i], deltas.Top()) * SigmoidPrime(activations[l+1][i]));
+			d.Add(Dot(nextLayerWeightsT[i], deltas.Top()) * SigmoidPrime(weightedSums[l][i]));
 		}
 		deltas.Add(d);
 	}
