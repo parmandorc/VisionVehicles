@@ -29,12 +29,24 @@ private:
 	// The weights for each layer of neural network, and for each neuron
 	TArray<TArray<TArray<float>>> weights;
 
+	// The learning rate used for training
+	float learningRate;
+
+	// The current epoche of training
+	int epoche;
+
+	// The initial value for the learning rate
+	float initialLearningRate;
+
+	// The factor that controls the decay of the learning rate
+	float learningRateDecay;
+
 public:
 	// Factory method for the class
 	static UNeuralNetwork* GetInstance();
 
 	// Initializes the neural network with the specified dimensions
-	void Init(int inputs, int outputs, TArray<int> hiddenLayers);
+	void Init(int inputs, int outputs, TArray<int> hiddenLayers, float _initialLearningRate = 0.1f, float _learningRateDecay = 0.001f);
 
 	// Runs the neural network for the given inputs and returns its ouput
 	TArray<float> Run(TArray<float> inputs);
@@ -44,10 +56,33 @@ public:
 	float Train(TArray<float> inputs, TArray<float> expectedOutputs);
 
 private:
+	// Runs the neural network for the given inputs and returns its ouput
+	//	Also returns the weighted sums and activations of each unit in each layer
+	TArray<float> Run(TArray<float> inputs, TArray<TArray<float>>* weightedSums, TArray<TArray<float>>* activations);
+
 	// Calculates the dot product of two vectors
 	// PRE: a.Num() == b.Num()
-	float Dot(TArray<float>& a, TArray<float>& b);
+	float Dot(const TArray<float>& a, const TArray<float>& b) const;
+
+	// Computes the error between the two given errors
+	float ComputeError(const TArray<float>& a, const TArray<float>& b) const;
+
+	// Computes the difference of the two vectors: a - b
+	TArray<float> Difference(const TArray<float>& a, const TArray<float>& b) const;
+
+	// Computes the element-wise multiplication of two vectors
+	TArray<float> Multiply(const TArray<float>& a, const TArray<float>& b) const;
+
+	// Transposes the matrix
+	// Pre: 'a' represents a proper 2-D matrix
+	TArray<TArray<float>> Transpose(const TArray<TArray<float>>& a) const;
+
+	// Reverses the vector
+	template<typename T> TArray<T> Reverse(const TArray<T>& a) const;
 
 	// The sigmoid function used as activation function for the neural network
-	FORCEINLINE float Sigmoid(float value) { return 1.0f / (1.0f + FMath::Exp(-value)); }
+	FORCEINLINE float Sigmoid(float value) const { return 1.0f / (1.0f + FMath::Exp(-value)); }
+
+	// The derivative of the sigmoid function
+	FORCEINLINE float SigmoidPrime(float value) const { float s = Sigmoid(value); return s * (1 - s); }
 };
