@@ -90,13 +90,50 @@ float UNeuralNetwork::Train(TArray<float> inputs, TArray<float> expectedOutputs)
 	TArray<float> outputs = Run(inputs, &weightedSums, &activations);
 
 	// The deltas for each unit in each layer (how a change in its value affects a change in the error)
+	// Note: the layers are in reverse order, i.e. the output layer has index 0
 	TArray<TArray<float>> deltas;
 
-	// Calculate the error made
-	float error = ComputeError(expectedOutputs, outputs);
+	// Compute the deltas for the last layer
+	deltas.Add(Multiply(Difference(activations.Top(), expectedOutputs), weightedSums.Top()));
 
-	return error;
+	// Compute the deltas for each layer backwards: backpropagation
+	for (int l = weights.Num() - 2; l >= 0; l--)
+	{
+		TArray<TArray<float>> nextLayerWeightsT = Transpose(weights[l+1]);
+
+		TArray<float> d;
+		for (int i = 0; i < weights[l].Num(); i++)
+		{
+			d.Add(Dot(nextLayerWeightsT[i], deltas.Top()) * SigmoidPrime(activations[l+1][i]));
+		}
+		deltas.Add(d);
+	}
+
+	// Reverse deltas so they can use in the same order as weights
+	deltas = Reverse(deltas);
+
+	// Alter the weights in each layer
+	for (int l = 0; l < weights.Num(); l++)
+	{
+		for (int j = 0; j < weights[l].Num(); j++)
+		{
+			// Adjust the weight for each connection
+			for (int i = 0; i < weights[l][j].Num() - 1; i++)
+			{
+				weights[l][j][i] -= deltas[l][j] * activations[l][i];
+			}
+			
+			// Adjust the weight for the bias
+			weights[l][j][weights[l][j].Num() - 1] -= deltas[l][j];
+		}
+	}
+
+	// Calculate the error made
+	return ComputeError(expectedOutputs, outputs);
 }
+
+
+// ------ AUXILIARY MATHEMATICAL METHODS ------
 
 float UNeuralNetwork::Dot(const TArray<float>& a, const TArray<float>& b) const
 {
@@ -128,4 +165,60 @@ float UNeuralNetwork::ComputeError(const TArray<float>& a, const TArray<float>& 
 		value += (a[i] - b[i]) * (a[i] - b[i]);
 	}
 	return value * 0.5f;
+}
+
+TArray<float> UNeuralNetwork::Difference(const TArray<float>& a, const TArray<float>& b) const
+{
+	if (a.Num() != b.Num())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Trying to compute the difference of two vectors with non-equal dimensions: %d - %d."), a.Num(), b.Num());
+	}
+
+	TArray<float> diff;
+	for (int i = 0; i < FMath::Min(a.Num(), b.Num()); i++)
+	{
+		diff.Add(a[i] - b[i]);
+	}
+	return diff;
+}
+
+TArray<float> UNeuralNetwork::Multiply(const TArray<float>& a, const TArray<float>& b) const
+{
+	if (a.Num() != b.Num())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Trying to multiply two vectors with non-equal dimensions: %d - %d."), a.Num(), b.Num());
+	}
+
+	TArray<float> mult;
+	for (int i = 0; i < FMath::Min(a.Num(), b.Num()); i++)
+	{
+		mult.Add(a[i] * b[i]);
+	}
+	return mult;
+}
+
+TArray<TArray<float>> UNeuralNetwork::Transpose(const TArray<TArray<float>>& a) const
+{
+	TArray<TArray<float>> t;
+	for (int i = 0; i < a[0].Num(); i++)
+	{
+		TArray<float> x;
+		for (int j = 0; j < a.Num(); j++)
+		{
+			x.Add(a[j][i]);
+		}
+		t.Add(x);
+	}
+	return t;
+}
+
+template<typename T>
+TArray<T> UNeuralNetwork::Reverse(const TArray<T>& a) const
+{
+	TArray<T> result;
+	for (int i = a.Num() - 1; i >= 0; i--)
+	{
+		result.Add(a[i]);
+	}
+	return result;
 }

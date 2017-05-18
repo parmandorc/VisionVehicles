@@ -52,12 +52,25 @@ private:
 	// PRE: a.Num() == b.Num()
 	float Dot(const TArray<float>& a, const TArray<float>& b) const;
 
+	// Computes the error between the two given errors
+	float ComputeError(const TArray<float>& a, const TArray<float>& b) const;
+
+	// Computes the difference of the two vectors: a - b
+	TArray<float> Difference(const TArray<float>& a, const TArray<float>& b) const;
+
+	// Computes the element-wise multiplication of two vectors
+	TArray<float> Multiply(const TArray<float>& a, const TArray<float>& b) const;
+
+	// Transposes the matrix
+	// Pre: 'a' represents a proper 2-D matrix
+	TArray<TArray<float>> Transpose(const TArray<TArray<float>>& a) const;
+
+	// Reverses the vector
+	template<typename T> TArray<T> Reverse(const TArray<T>& a) const;
+
 	// The sigmoid function used as activation function for the neural network
 	FORCEINLINE float Sigmoid(float value) const { return 1.0f / (1.0f + FMath::Exp(-value)); }
 
 	// The derivative of the sigmoid function
 	FORCEINLINE float SigmoidPrime(float value) const { float s = Sigmoid(value); return s * (1 - s); }
-
-	// Computes the error between the two given errors
-	float ComputeError(const TArray<float>& a, const TArray<float>& b) const;
 };
