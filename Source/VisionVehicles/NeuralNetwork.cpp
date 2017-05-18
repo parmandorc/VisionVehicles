@@ -14,7 +14,8 @@ UNeuralNetwork* UNeuralNetwork::GetInstance()
 	return NewObject<UNeuralNetwork>();
 }
 
-void UNeuralNetwork::Init(int inputs, int outputs, TArray<int> hiddenLayers)
+void UNeuralNetwork::Init(int inputs, int outputs, TArray<int> hiddenLayers, 
+	float _initialLearningRate, float _learningRateDecay)
 {
 	// Set dimensions
 	nInputs = inputs;
@@ -44,6 +45,12 @@ void UNeuralNetwork::Init(int inputs, int outputs, TArray<int> hiddenLayers)
 
 		weights.Add(layer);
 	}
+
+	// Set learning rate
+	epoche = 0;
+	initialLearningRate = _initialLearningRate;
+	learningRateDecay = _learningRateDecay;
+	learningRate = initialLearningRate;
 }
 
 TArray<float> UNeuralNetwork::Run(TArray<float> inputs, TArray<TArray<float>>* weightedSums, TArray<TArray<float>>* activations)
@@ -120,13 +127,16 @@ float UNeuralNetwork::Train(TArray<float> inputs, TArray<float> expectedOutputs)
 			// Adjust the weight for each connection
 			for (int i = 0; i < weights[l][j].Num() - 1; i++)
 			{
-				weights[l][j][i] -= deltas[l][j] * activations[l][i];
+				weights[l][j][i] -= deltas[l][j] * activations[l][i] * learningRate;
 			}
 			
 			// Adjust the weight for the bias
-			weights[l][j][weights[l][j].Num() - 1] -= deltas[l][j];
+			weights[l][j][weights[l][j].Num() - 1] -= deltas[l][j] * learningRate;
 		}
 	}
+
+	// Update the learning rate
+	learningRate = initialLearningRate / (1.0f + learningRateDecay * ++epoche);
 
 	// Calculate the error made
 	return ComputeError(expectedOutputs, outputs);

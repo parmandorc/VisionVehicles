@@ -29,12 +29,24 @@ private:
 	// The weights for each layer of neural network, and for each neuron
 	TArray<TArray<TArray<float>>> weights;
 
+	// The learning rate used for training
+	float learningRate;
+
+	// The current epoche of training
+	int epoche;
+
+	// The initial value for the learning rate
+	float initialLearningRate;
+
+	// The factor that controls the decay of the learning rate
+	float learningRateDecay;
+
 public:
 	// Factory method for the class
 	static UNeuralNetwork* GetInstance();
 
 	// Initializes the neural network with the specified dimensions
-	void Init(int inputs, int outputs, TArray<int> hiddenLayers);
+	void Init(int inputs, int outputs, TArray<int> hiddenLayers, float _initialLearningRate = 0.1f, float _learningRateDecay = 0.001f);
 
 	// Runs the neural network for the given inputs and returns its ouput
 	TArray<float> Run(TArray<float> inputs);
