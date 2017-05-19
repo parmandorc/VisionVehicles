@@ -59,9 +59,7 @@ TArray<float> UNeuralNetwork::Run(TArray<float> inputs, TArray<TArray<float>>* w
 	activations->Empty();
 
 	// Initialize the first layer with the input values
-	TArray<float> inputsActivations;
-	for (float value : inputs) inputsActivations.Add(Sigmoid(value));
-	activations->Add(inputsActivations);
+	activations->Add(inputs);
 	
 	// Feed forward the activation values
 	for (int l = 0; l < weights.Num(); l++)
