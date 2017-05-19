@@ -8,7 +8,7 @@
 /** This class implements a neural network used by the vehicles AI controller.
  *		The NN architecture is a Multi-Layer Perceptron (MLP).
  */
-UCLASS()
+UCLASS(Blueprintable)
 class VISIONVEHICLES_API UNeuralNetwork : public UObject
 {
 	GENERATED_BODY()
@@ -43,16 +43,20 @@ private:
 
 public:
 	// Factory method for the class
+	UFUNCTION(BlueprintCallable, Category = "AI|Neural Network")
 	static UNeuralNetwork* GetInstance();
 
 	// Initializes the neural network with the specified dimensions
+	UFUNCTION(BlueprintCallable, Category = "AI|Neural Network")
 	void Init(int inputs, int outputs, TArray<int> hiddenLayers, float _initialLearningRate = 0.1f, float _learningRateDecay = 0.001f);
 
 	// Runs the neural network for the given inputs and returns its ouput
+	UFUNCTION(BlueprintCallable, Category = "AI|Neural Network")
 	TArray<float> Run(TArray<float> inputs);
 
 	/* Trains the neural network for the given inputs and expected output.
 	 *	Returns the error that was made in this iteration. */
+	UFUNCTION(BlueprintCallable, Category = "AI|Neural Network")
 	float Train(TArray<float> inputs, TArray<float> expectedOutputs);
 
      TArray<int> GetStructure();
