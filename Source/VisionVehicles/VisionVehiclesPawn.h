@@ -143,7 +143,7 @@ public:
           FVector2D FindTrackEnd(TArray<bool> cameraFeed);
      
      UFUNCTION(BlueprintCallable)
-          void TrainNetwork(TArray<float> _inputs, TArray<float> _outputs);
+          float TrainNetwork(TArray<float> _inputs, TArray<float> _outputs);
 
      UFUNCTION(BlueprintCallable)
           TArray<float> RunNetwork(TArray<float> _inputs);

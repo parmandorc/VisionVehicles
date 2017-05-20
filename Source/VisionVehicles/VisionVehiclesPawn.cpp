@@ -389,9 +389,9 @@ FVector2D AVisionVehiclesPawn::FindTrackEnd(TArray<bool> cameraFeed)
      //return FVector2D(-1, -1);
 }
 
-void AVisionVehiclesPawn::TrainNetwork(TArray<float> _inputs, TArray<float> _outputs)
+float AVisionVehiclesPawn::TrainNetwork(TArray<float> _inputs, TArray<float> _outputs)
 {
-     NeuralNetwork->Train(_inputs, _outputs);
+     return NeuralNetwork->Train(_inputs, _outputs);
 }
 
 TArray<float> AVisionVehiclesPawn::RunNetwork(TArray<float> _inputs)
