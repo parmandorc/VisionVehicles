@@ -108,6 +108,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<float> ProcessCameraFeed();
 
+	UFUNCTION(BlueprintCallable)
+	FVector2D FindTrackEnd(TArray<bool> cameraFeed);
+
 private:
 	/** 
 	 * Activate In-Car camera. Enable camera and sets visibility of incar hud display
@@ -123,6 +126,10 @@ private:
 	/* Are we on a 'slippery' surface */
 	bool bIsLowFriction;
 
+	// A reference to the neural network used by this pawn
+	UPROPERTY()
+	UNeuralNetwork* NeuralNetwork;
+
 public:
 	/** Returns SpringArm subobject **/
 	FORCEINLINE USpringArmComponent* GetSpringArm() const { return SpringArm; }
@@ -137,25 +144,6 @@ public:
 	/** Returns vision component **/
 	FORCEINLINE UVehicleVisionComponent* GetVisionComponent() const { return VisionComponent; }
 	/** Return the neural network used by this pawn */
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UNeuralNetwork* GetNeuralNetwork() const { return NeuralNetwork; }
-     
-     // A reference to the neural network used by this pawn
-     UPROPERTY()
-          UNeuralNetwork* NeuralNetwork;
-
-     UFUNCTION(BlueprintCallable)
-          FVector2D FindTrackEnd(TArray<bool> cameraFeed);
-     
-     UFUNCTION(BlueprintCallable)
-          float TrainNetwork(TArray<float> _inputs, TArray<float> _outputs);
-
-     UFUNCTION(BlueprintCallable)
-          TArray<float> RunNetwork(TArray<float> _inputs);
-     
-     UFUNCTION(BlueprintCallable)
-          TArray<int> GetNetworkStructure();
-
-     UFUNCTION(BlueprintCallable)
-          float GetWeight(int _layerInd, int _fromInd, int _toInd);
-
 };

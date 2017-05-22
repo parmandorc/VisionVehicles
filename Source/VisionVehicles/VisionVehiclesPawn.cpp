@@ -380,26 +380,6 @@ FVector2D AVisionVehiclesPawn::FindTrackEnd(TArray<bool> cameraFeed)
      //return FVector2D(-1, -1);
 }
 
-float AVisionVehiclesPawn::TrainNetwork(TArray<float> _inputs, TArray<float> _outputs)
-{
-     return NeuralNetwork->Train(_inputs, _outputs);
-}
-
-TArray<float> AVisionVehiclesPawn::RunNetwork(TArray<float> _inputs)
-{
-     return NeuralNetwork->Run(_inputs);
-}
-
-TArray<int> AVisionVehiclesPawn::GetNetworkStructure()
-{
-     return NeuralNetwork->GetStructure();
-}
-
-float AVisionVehiclesPawn::GetWeight(int _layerInd, int _fromInd, int _toInd)
-{
-     return NeuralNetwork->GetWeight(_layerInd, _fromInd, _toInd);
-}
-
 TArray<float> AVisionVehiclesPawn::ProcessCameraFeed()
 {
 	TBitArray<> feed = GetVisionComponent()->GetFeed();
@@ -445,7 +425,7 @@ TArray<float> AVisionVehiclesPawn::ProcessCameraFeed()
 	k = k / FMath::Pow(s, 4.0f);
 	sk = sk / FMath::Pow(s, 3.0f) - 3;
 
-	UE_LOG(LogTemp, Log, TEXT("%f %f %f %f %f %f %f"), m, s, k, sk, u, e, GetVehicleMovement()->GetForwardSpeed());
+	//UE_LOG(LogTemp, Log, TEXT("%f %f %f %f %f %f %f"), m, s, k, sk, u, e, GetVehicleMovement()->GetForwardSpeed());
 
 	return TArray<float>({m, s, k, sk, u, e});
 }

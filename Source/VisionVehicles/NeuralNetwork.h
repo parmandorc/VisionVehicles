@@ -59,9 +59,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AI|Neural Network")
 	float Train(TArray<float> inputs, TArray<float> expectedOutputs);
 
-     TArray<int> GetStructure();
+	// Returns the structure of the NN as the dimensions of each layer
+	UFUNCTION(BlueprintCallable, Category = "AI|Neural Network")
+    TArray<int> GetStructure();
 
-     float GetWeight(int _layerId, int _fromInd, int _toInd);
+	// Returns the weight of a specific connection in the NN
+	UFUNCTION(BlueprintCallable, Category = "AI|Neural Network")
+    float GetWeight(int _layerId, int _fromInd, int _toInd);
+
 private:
 	// Runs the neural network for the given inputs and returns its ouput
 	//	Also returns the weighted sums and activations of each unit in each layer
@@ -91,7 +96,5 @@ private:
 	FORCEINLINE float Sigmoid(float value) const { return 1.0f / (1.0f + FMath::Exp(-value)); }
 
 	// The derivative of the sigmoid function
-	FORCEINLINE float SigmoidPrime(float value) const { float s = Sigmoid(value); return s * (1 - s); }
-
-     
+	FORCEINLINE float SigmoidPrime(float value) const { float s = Sigmoid(value); return s * (1 - s); } 
 };
