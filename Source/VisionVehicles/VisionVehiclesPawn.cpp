@@ -220,15 +220,6 @@ void AVisionVehiclesPawn::Tick(float Delta)
 			InternalCamera->RelativeRotation = HeadRotation;
 		}
 	}
-
-	// Testing NN -- to delete when using real inputs and outputs
-	TArray<float> input = TArray<float>({ FMath::RandRange(0.0f, 1.0f) });
-	TArray<float> expectedOutput = TArray<float>({ FMath::RandRange(0.0f, 1.0f), FMath::RandRange(0.0f, 1.0f) });
-	TArray<float> output = NeuralNetwork->Run(input);
-	UE_LOG(LogTemp, Log, TEXT("Run NN: %f"), input[0]);
-	for (float x : output) { UE_LOG(LogTemp, Log, TEXT("%f"), x); }
-	float error = NeuralNetwork->Train(input, expectedOutput);
-	UE_LOG(LogTemp, Log, TEXT("Train NN: %f %f - Error: %f"), expectedOutput[0], expectedOutput[1], error);
 }
 
 void AVisionVehiclesPawn::BeginPlay()
@@ -409,5 +400,54 @@ float AVisionVehiclesPawn::GetWeight(int _layerInd, int _fromInd, int _toInd)
      return NeuralNetwork->GetWeight(_layerInd, _fromInd, _toInd);
 }
 
+TArray<float> AVisionVehiclesPawn::ProcessCameraFeed()
+{
+	TBitArray<> feed = GetVisionComponent()->GetFeed();
+
+	// Compute the vertical projection histogram of the image
+	TArray<float> verticalProjectionHistogram;
+	int n = FMath::Sqrt(feed.Num());
+	int totalCount = 0;
+	for (int j = 0; j < n; j++)
+	{
+		int columnCount = 0;
+		for (int i = 0; i < n; i++)
+		{
+			if (feed[i * n + j])
+			{
+				++columnCount;
+				++totalCount;
+			}
+		}
+		verticalProjectionHistogram.Add(columnCount);
+	}
+	for (int i = 0; i < n; i++)
+	{
+		verticalProjectionHistogram[i] /= totalCount;
+	}
+
+	// Compute the inputs from the vertical projection histogram
+	float m = 0.0f, s = 0.0f, k = 0.0f, sk = 0.0f, u = 0.0f, e = 0.0f;
+	for (int i = 0; i < n; i++)
+	{
+		m += i * verticalProjectionHistogram[i];
+	}
+	for (int i = 0; i < n; i++)
+	{
+		s += FMath::Pow(i - m, 2.0f) * verticalProjectionHistogram[i];
+		k += FMath::Pow(i - m, 4.0f) * verticalProjectionHistogram[i];
+		sk += FMath::Pow(i - m, 3.0f) * verticalProjectionHistogram[i];
+		u += FMath::Pow(verticalProjectionHistogram[i], 2.0f);
+		if (verticalProjectionHistogram[i] > 0.0f)
+			e -= verticalProjectionHistogram[i] * FMath::Log2(verticalProjectionHistogram[i]);
+	}
+	s = FMath::Sqrt(s);
+	k = k / FMath::Pow(s, 4.0f);
+	sk = sk / FMath::Pow(s, 3.0f) - 3;
+
+	UE_LOG(LogTemp, Log, TEXT("%f %f %f %f %f %f %f"), m, s, k, sk, u, e, GetVehicleMovement()->GetForwardSpeed());
+
+	return TArray<float>({m, s, k, sk, u, e});
+}
 
 #undef LOCTEXT_NAMESPACE

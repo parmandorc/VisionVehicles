@@ -104,6 +104,10 @@ public:
 	static const FName LookUpBinding;
 	static const FName LookRightBinding;
 
+	/* Process the feed from the vision component an creates the inputs array for the NN */
+	UFUNCTION(BlueprintCallable)
+	TArray<float> ProcessCameraFeed();
+
 private:
 	/** 
 	 * Activate In-Car camera. Enable camera and sets visibility of incar hud display
