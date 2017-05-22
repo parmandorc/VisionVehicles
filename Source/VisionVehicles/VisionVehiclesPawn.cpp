@@ -236,7 +236,7 @@ void AVisionVehiclesPawn::BeginPlay()
      NeuralNetwork = UNeuralNetwork::GetInstance();
 
 	// Initialize neural network
-	NeuralNetwork->Init(1, 2, TArray<int>({ 2, 2 }));
+	NeuralNetwork->Init(4, 2, TArray<int>({ 3 }), 0.2f);
 }
 
 void AVisionVehiclesPawn::OnResetVR()
@@ -407,27 +407,32 @@ TArray<float> AVisionVehiclesPawn::ProcessCameraFeed()
 	}
 
 	// Compute the inputs from the vertical projection histogram
-	float m = 0.0f, s = 0.0f, k = 0.0f, sk = 0.0f, u = 0.0f, e = 0.0f;
-	for (int i = 0; i < n; i++)
+	float t = 0.0f, m = 0.5f, s = 0.0f;//;, k = 0.0f, sk = 0.0f, u = 0.0f, e = 0.0f;
+	if (totalCount > 0)
 	{
-		m += i * verticalProjectionHistogram[i];
+		m = 0.0f;
+		for (int i = 0; i < n; i++)
+		{
+			m += i * verticalProjectionHistogram[i];
+		}
+		for (int i = 0; i < n; i++)
+		{
+			s += FMath::Pow(i - m, 2.0f) * verticalProjectionHistogram[i];
+			//k += FMath::Pow(i - m, 4.0f) * verticalProjectionHistogram[i];
+			//sk += FMath::Pow(i - m, 3.0f) * verticalProjectionHistogram[i];
+			//u += FMath::Pow(verticalProjectionHistogram[i], 2.0f);
+			//if (verticalProjectionHistogram[i] > 0.0f)
+			//	e -= verticalProjectionHistogram[i] * FMath::Log2(verticalProjectionHistogram[i]);
+		}
+		t = (float)totalCount / (n * n);
+		s = FMath::Sqrt(s) / n;
+		m = m / n;
+		//k = k / FMath::Pow(s, 4.0f);
+		//sk = sk / FMath::Pow(s, 3.0f) - 3;
 	}
-	for (int i = 0; i < n; i++)
-	{
-		s += FMath::Pow(i - m, 2.0f) * verticalProjectionHistogram[i];
-		k += FMath::Pow(i - m, 4.0f) * verticalProjectionHistogram[i];
-		sk += FMath::Pow(i - m, 3.0f) * verticalProjectionHistogram[i];
-		u += FMath::Pow(verticalProjectionHistogram[i], 2.0f);
-		if (verticalProjectionHistogram[i] > 0.0f)
-			e -= verticalProjectionHistogram[i] * FMath::Log2(verticalProjectionHistogram[i]);
-	}
-	s = FMath::Sqrt(s);
-	k = k / FMath::Pow(s, 4.0f);
-	sk = sk / FMath::Pow(s, 3.0f) - 3;
+	UE_LOG(LogTemp, Log, TEXT("Inputs: %f %f %f %f"), t, m, s, GetVehicleMovement()->GetForwardSpeed() / 2500.0f);
 
-	//UE_LOG(LogTemp, Log, TEXT("%f %f %f %f %f %f %f"), m, s, k, sk, u, e, GetVehicleMovement()->GetForwardSpeed());
-
-	return TArray<float>({m, s, k, sk, u, e});
+	return TArray<float>({t, m, s, GetVehicleMovement()->GetForwardSpeed() / 2500.0f});
 }
 
 #undef LOCTEXT_NAMESPACE
