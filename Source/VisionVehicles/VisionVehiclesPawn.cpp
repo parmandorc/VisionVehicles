@@ -120,6 +120,12 @@ AVisionVehiclesPawn::AVisionVehiclesPawn()
 	GearDisplayColor = FColor(255, 255, 255, 255);
 
 	bInReverseGear = false;
+
+	// Set NN defaults
+	NumberOfInputs = 1;
+	NumberOfOutputs = 1;
+	InitialLearningRate = 0.1f;
+	LearningRateDecay = 0.001f;
 }
 
 void AVisionVehiclesPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -236,7 +242,7 @@ void AVisionVehiclesPawn::BeginPlay()
      NeuralNetwork = UNeuralNetwork::GetInstance();
 
 	// Initialize neural network
-	NeuralNetwork->Init(4, 2, TArray<int>({ 3 }), 0.2f);
+	NeuralNetwork->Init(NumberOfInputs, NumberOfOutputs, HiddenLayers, InitialLearningRate, LearningRateDecay);
 }
 
 void AVisionVehiclesPawn::OnResetVR()
@@ -407,7 +413,7 @@ TArray<float> AVisionVehiclesPawn::ProcessCameraFeed()
 	}
 
 	// Compute the inputs from the vertical projection histogram
-	float t = 0.0f, m = 0.5f, s = 0.0f;//;, k = 0.0f, sk = 0.0f, u = 0.0f, e = 0.0f;
+	float t = 0.0f, m = 0.5f, s = 0.0f, k = 0.0f, sk = 0.0f, u = 0.0f, e = 0.0f;
 	if (totalCount > 0)
 	{
 		m = 0.0f;
@@ -419,20 +425,22 @@ TArray<float> AVisionVehiclesPawn::ProcessCameraFeed()
 		{
 			s += FMath::Pow(i - m, 2.0f) * verticalProjectionHistogram[i];
 			//k += FMath::Pow(i - m, 4.0f) * verticalProjectionHistogram[i];
-			//sk += FMath::Pow(i - m, 3.0f) * verticalProjectionHistogram[i];
+			sk += FMath::Pow(i - m, 3.0f) * verticalProjectionHistogram[i];
 			//u += FMath::Pow(verticalProjectionHistogram[i], 2.0f);
 			//if (verticalProjectionHistogram[i] > 0.0f)
 			//	e -= verticalProjectionHistogram[i] * FMath::Log2(verticalProjectionHistogram[i]);
 		}
-		t = (float)totalCount / (n * n);
-		s = FMath::Sqrt(s) / n;
-		m = m / n;
-		//k = k / FMath::Pow(s, 4.0f);
-		//sk = sk / FMath::Pow(s, 3.0f) - 3;
-	}
-	UE_LOG(LogTemp, Log, TEXT("Inputs: %f %f %f %f"), t, m, s, GetVehicleMovement()->GetForwardSpeed() / 2500.0f);
 
-	return TArray<float>({t, m, s, GetVehicleMovement()->GetForwardSpeed() / 2500.0f});
+		s = FMath::Sqrt(s);
+		//k = k / FMath::Pow(s, 4.0f) - 3.0f;
+		sk = sk / FMath::Pow(s, 3.0f);
+
+		t = (float)totalCount / (n * n);
+		m = m / n;
+		s = s / n;
+	}
+
+	return TArray<float>({ t, m, s, sk, GetVehicleMovement()->GetForwardSpeed() / 2500.0f });
 }
 
 #undef LOCTEXT_NAMESPACE

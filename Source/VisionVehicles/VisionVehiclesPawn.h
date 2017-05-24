@@ -42,6 +42,26 @@ class AVisionVehiclesPawn : public AWheeledVehicle
 	UPROPERTY(Category = Vision, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UVehicleVisionComponent* VisionComponent;
 
+	/** The number of inputs of the NN */
+	UPROPERTY(Category = "AI|Neural Network", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true", UIMin = "1"))
+	int NumberOfInputs;
+
+	/** The number of outputs of the NN */
+	UPROPERTY(Category = "AI|Neural Network", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true", UIMin = "1"))
+	int NumberOfOutputs;
+
+	/** The dimensions of the hidden layers of the NN */
+	UPROPERTY(Category = "AI|Neural Network", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<int> HiddenLayers;
+
+	/** The initial learning rate of the NN */
+	UPROPERTY(Category = "AI|Neural Network", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float InitialLearningRate;
+
+	/** The decay factor for the learning rate of the NN */
+	UPROPERTY(Category = "AI|Neural Network", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float LearningRateDecay;
+
 public:
 	AVisionVehiclesPawn();
 
